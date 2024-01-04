@@ -24,25 +24,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Resource identifier
+        // Resource identifier
         RadioGroup radioGroup = findViewById(R.id.radioGroup);
         EditText answerText = findViewById(R.id.answerText);
         Button checkButton = findViewById(R.id.checkButton);
 
-        //questions
+        //generate question
         RadioButton defaultRadioButton = findViewById(radioGroup.getCheckedRadioButtonId());
         level = getLevelFromRadioButton(defaultRadioButton);
         generateQuestion();
 
-        //new questions
+        //new question
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             level = getLevelFromRadioButton(findViewById(checkedId));
             generateQuestion();
         });
 
-        //check input field
+        //Check button listener
         checkButton.setOnClickListener(v -> {
-            // Check if the textEdit is empty
             if (answerText.getText().toString().isEmpty()) {
                 Toast.makeText(
                         getApplicationContext(),
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //new question when radio buton is selected
+    //new question based on selected radio
     private void generateQuestion() {
         TextView firstNumberTextView = findViewById(R.id.firstNumberQ);
         TextView operatorTextView = findViewById(R.id.operatorQ);
@@ -69,17 +68,17 @@ public class MainActivity extends AppCompatActivity {
         secondNumber = random.nextInt(level);
         operator = random.nextInt(4);
 
-        //display
+        // Display question
         firstNumberTextView.setText(String.valueOf(firstNumber));
         operatorTextView.setText(getOperatorSymbol(operator));
         secondNumberTextView.setText(String.valueOf(secondNumber));
     }
 
-    //compare user answer with the real correct answer
+    // Compare and check answer
     private void checkAnswer() {
         TextView scoreText = findViewById(R.id.scoreText);
 
-        // Calculations
+        // Calculate correctAnswer
         int correctAnswer;
         switch (operator) {
             case 0:
@@ -98,19 +97,19 @@ public class MainActivity extends AppCompatActivity {
                 correctAnswer = 0;
         }
 
-        //add score
+        // Add score by 1
         if (userAnswer == correctAnswer) {
             score++;
         } else {
-            //deduct score
+            // Deduct score by 1
             score--;
         }
 
-        // Display score
+        // Display the score
         scoreText.setText(String.valueOf(score));
     }
 
-    //show operator symbol
+    //operator symbol
     private String getOperatorSymbol(int operator) {
         // Map the number into an operator symbol
         switch (operator) {
@@ -128,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //get the level for radio button
+    // Helper method
     private int getLevelFromRadioButton(RadioButton radioButton) {
         switch (radioButton.getText().toString()) {
             case "i3":
