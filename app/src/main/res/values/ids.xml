@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="sco" type="id" />
+    <item name="my_toolbar" type="id" />
+    <item name="instructionsTitle" type="id" />
+    <item name="instructions" type="id" />
+    <item name="radioButton" type="id" />
+    <item name="radioButton2" type="id" />
+    <item name="radioButton3" type="id" />
+    <item name="operatorQ" type="id" />
+    <item name="answerText" type="id" />
+    <item name="secondNumberQ" type="id" />
+    <item name="firstNumberQ" type="id" />
+    <item name="checkButton" type="id" />
+    <item name="scoreText" type="id" />
+    <item name="pointText" type="id" />
+    <item name="resetButton" type="id" />
+</resources>

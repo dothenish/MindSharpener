@@ -1,146 +1,144 @@
 package com.example.mindsharpener;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
-
+import android.widget.Toast;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textView, textView4, textView5, textView6, textView7, textView8;
-    private RadioGroup radioGroup;
-    private Button checkButton;
-    private int currentLevel;
-    private int currentPoints;
+    private int level = 0;
+    private int score = 0;
+    private int firstNumber = 0;
+    private int secondNumber = 0;
+    private int operator = 0;
+    private int userAnswer = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textView = findViewById(R.id.textView);
-        textView4 = findViewById(R.id.textView4);
-        textView5 = findViewById(R.id.textView5);
-        textView6 = findViewById(R.id.textView6);
-        textView7 = findViewById(R.id.textView7);
-        textView8 = findViewById(R.id.textView8);
-        radioGroup = findViewById(R.id.radioGroup);
-        checkButton = findViewById(R.id.button);
+        //Resource identifier
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+        EditText answerText = findViewById(R.id.answerText);
+        Button checkButton = findViewById(R.id.checkButton);
 
-        checkButton.setOnClickListener(view -> {
-            checkAnswer();
-            displayQuestion();
+        //questions
+        RadioButton defaultRadioButton = findViewById(radioGroup.getCheckedRadioButtonId());
+        level = getLevelFromRadioButton(defaultRadioButton);
+        generateQuestion();
+
+        //new questions
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            level = getLevelFromRadioButton(findViewById(checkedId));
+            generateQuestion();
         });
+
+        //check input field
+        checkButton.setOnClickListener(v -> {
+            // Check if the textEdit is empty
+            if (answerText.getText().toString().isEmpty()) {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Please answer the question given in the answer field.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            } else {
+                userAnswer = Integer.parseInt(answerText.getText().toString());
+                checkAnswer();
+                generateQuestion();
+            }
+        });
+
     }
 
+    //new question when radio buton is selected
+    private void generateQuestion() {
+        TextView firstNumberTextView = findViewById(R.id.firstNumberQ);
+        TextView operatorTextView = findViewById(R.id.operatorQ);
+        TextView secondNumberTextView = findViewById(R.id.secondNumberQ);
+
+        Random random = new Random();
+        firstNumber = random.nextInt(level);
+        secondNumber = random.nextInt(level);
+        operator = random.nextInt(4);
+
+        //display
+        firstNumberTextView.setText(String.valueOf(firstNumber));
+        operatorTextView.setText(getOperatorSymbol(operator));
+        secondNumberTextView.setText(String.valueOf(secondNumber));
+    }
+
+    //compare user answer with the real correct answer
     private void checkAnswer() {
+        TextView scoreText = findViewById(R.id.scoreText);
 
-        String userAnswerStr = ((TextView) findViewById(R.id.textInputEditText2)).getText().toString();
-
-
-        int userAnswer = 0;
-        try {
-            userAnswer = Integer.parseInt(userAnswerStr);
-        } catch (NumberFormatException e) {
-
-        }
-
-
-        int firstNumber = Integer.parseInt(textView4.getText().toString());
-        int secondNumber = Integer.parseInt(textView6.getText().toString());
-        int operator = Integer.parseInt(textView5.getText().toString());
-
-
-        int correctAnswer = calculateAnswer(firstNumber, secondNumber, operator);
-
-
-        if (userAnswer == correctAnswer) {
-            currentPoints++;
-        } else {
-            currentPoints--;
-        }
-
-
-        textView8.setText("POINTS: " + currentPoints);
-    }
-
-    private int calculateAnswer(int firstNumber, int secondNumber, int operator) {
+        // Calculations
+        int correctAnswer;
         switch (operator) {
             case 0:
-                return firstNumber + secondNumber;
+                correctAnswer = firstNumber + secondNumber;
+                break;
             case 1:
-                return firstNumber - secondNumber;
+                correctAnswer = firstNumber - secondNumber;
+                break;
             case 2:
-                return firstNumber * secondNumber;
+                correctAnswer = firstNumber * secondNumber;
+                break;
             case 3:
-                return firstNumber / secondNumber;
+                correctAnswer = firstNumber / secondNumber;
+                break;
+            default:
+                correctAnswer = 0;
+        }
+
+        //add score
+        if (userAnswer == correctAnswer) {
+            score++;
+        } else {
+            //deduct score
+            score--;
+        }
+
+        // Display score
+        scoreText.setText(String.valueOf(score));
+    }
+
+    //show operator symbol
+    private String getOperatorSymbol(int operator) {
+        // Map the number into an operator symbol
+        switch (operator) {
+            case 0:
+                return "+";
+            case 1:
+                return "-";
+            case 2:
+                return "*";
+            case 3:
+                return "/";
+            default:
+                return "";
+        }
+    }
+
+
+    //get the level for radio button
+    private int getLevelFromRadioButton(RadioButton radioButton) {
+        switch (radioButton.getText().toString()) {
+            case "i3":
+                return 10;
+            case "i5":
+                return 100;
+            case "i7":
+                return 1000;
             default:
                 return 0;
         }
     }
-
-    @SuppressLint("NonConstantResourceId")
-    private void displayQuestion() {
-
-        Random random = new Random();
-
-
-        RadioButton selectedRadioButton = findViewById(radioGroup.getCheckedRadioButtonId());
-        if (selectedRadioButton != null) {
-            String levelStr = selectedRadioButton.getText().toString().replaceAll("[^0-9]", "");
-            currentLevel = Integer.parseInt(levelStr);
-        } else {
-
-        }
-
-
-        int firstNumber = random.nextInt((int) Math.pow(10, currentLevel));
-        int secondNumber = random.nextInt((int) Math.pow(10, currentLevel));
-
-
-        int operator = random.nextInt(4);
-
-
-        textView4.setText(String.valueOf(firstNumber));
-        textView6.setText(String.valueOf(secondNumber));
-        textView5.setText(String.valueOf(operator));
-
-
-        StringBuilder questionText = new StringBuilder();
-        questionText.append("Calculate: ").append(firstNumber);
-
-        switch (operator) {
-            case 0:
-                questionText.append(" + ");
-                break;
-            case 1:
-                questionText.append(" - ");
-                break;
-            case 2:
-                questionText.append(" * ");
-                break;
-            case 3:
-                questionText.append(" / ");
-                break;
-            default:
-                // Handle unknown operator
-                break;
-        }
-
-        questionText.append(secondNumber);
-
-
-        textView.setText(questionText.toString());
-        }
-    }
-
-
-
+}
